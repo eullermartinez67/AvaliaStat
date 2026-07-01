@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AvaliaStat — Inferência Estatística NBR 14653-2</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --paper:#F6F7F4;
+  --card:#FFFFFF;
+  --grid:#E7EBEF;
+  --grid2:#DDE3E9;
+  --line:#D9DFE6;
+  --ink:#17263B;
+  --ink2:#46566C;
+  --ink3:#8794A5;
+  --blue:#1F4FD8;
+  --blue-dim:#E9EFFC;
+  --green:#0E7A46;
+  --green-dim:#E4F3EB;
+  --red:#C22F2F;
+  --red-dim:#FAE8E8;
+  --amber:#8F6400;
+  --amber-dim:#FBF1D8;
+}
+body{
+  font-family:'IBM Plex Sans',sans-serif;color:var(--ink);
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid2) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid2) 1px,transparent 1px),
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:80px 80px,80px 80px,16px 16px,16px 16px;
+  min-height:100vh;font-size:13.5px;line-height:1.5;
+}
+.wrap{max-width:1060px;margin:0 auto;padding:0 20px 60px}
+
+/* ── topo ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 0 18px;border-bottom:2px solid var(--ink);margin-bottom:26px}
+.brand{display:flex;align-items:baseline;gap:12px}
+.brand-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.5px}
+.brand-name em{font-style:normal;color:var(--blue)}
+.brand-sub{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink3);letter-spacing:.4px}
+.top-user{font-size:11.5px;color:var(--ink3);display:flex;align-items:center;gap:12px}
+.top-user a{color:var(--ink3);cursor:pointer;text-decoration:underline}
+
+/* ── botoes / campos ── */
+.btn{font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;font-weight:500;padding:8px 14px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink2);cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .13s}
+.btn:hover{border-color:var(--ink3);color:var(--ink)}
+.btn-blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-blue:hover{background:#1841B5;border-color:#1841B5;color:#fff}
+.btn-danger{color:var(--red);border-color:#EBC7C7}
+.btn-danger:hover{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.btn-sm{padding:4px 9px;font-size:11.5px}
+input,select,textarea{font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 11px;width:100%;outline:none;transition:border .13s}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+label{font-size:10.5px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:5px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg{margin-bottom:2px}
+@media(max-width:640px){.fgrid{grid-template-columns:1fr}}
+
+/* ── cartoes / tabelas ── */
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(23,38,59,.04)}
+.c-head{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:4px}
+.c-sub{font-size:11.5px;color:var(--ink3)}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;font-size:10px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--ink3);padding:8px 10px;border-bottom:1.5px solid var(--line)}
+.tbl td{padding:10px;border-bottom:1px solid var(--grid)}
+.tbl tr:last-child td{border-bottom:none}
+.row-click{cursor:pointer;transition:background .1s}
+.row-click:hover td{background:var(--blue-dim)}
+.mono{font-family:'IBM Plex Mono',monospace}
+.loading{text-align:center;color:var(--ink3);padding:26px;font-size:12.5px}
+
+/* ── pills / chips ── */
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.p-blue{background:var(--blue-dim);color:var(--blue)}
+.p-green{background:var(--green-dim);color:var(--green)}
+.p-red{background:var(--red-dim);color:var(--red)}
+.p-amber{background:var(--amber-dim);color:var(--amber)}
+.p-gray{background:#EEF1F4;color:var(--ink2)}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:4px 12px;border-radius:20px;font-size:12px;background:var(--blue-dim);color:var(--blue);border:1px solid #C9D7F5}
+.chip i{cursor:pointer;font-size:13px}
+
+/* ── readout (assinatura visual) ── */
+.readout{border:1.5px solid var(--ink);border-radius:10px;padding:20px 22px;background:linear-gradient(180deg,#FFFFFF, #FAFBFC)}
+.readout-val{font-family:'IBM Plex Mono',monospace;font-size:30px;font-weight:500;letter-spacing:-.5px}
+.readout-lbl{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3)}
+.range-bar{position:relative;height:8px;background:var(--grid);border-radius:6px;margin:14px 0 6px}
+.range-fill{position:absolute;top:0;bottom:0;background:var(--blue-dim);border:1px solid var(--blue);border-radius:6px}
+.range-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;background:var(--blue);border:2.5px solid #fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.range-ends{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink2)}
+
+/* ── modais ── */
+.overlay{position:fixed;inset:0;background:rgba(23,38,59,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:18px}
+.modal{background:var(--card);border-radius:12px;padding:22px 24px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 18px 50px rgba(23,38,59,.25)}
+.m-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin-bottom:16px}
+.m-foot{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}
+
+/* ── login / setup ── */
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.gate-box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:34px 36px;width:100%;max-width:400px;box-shadow:0 12px 40px rgba(23,38,59,.1)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:8px;font-size:12.5px;transition:transform .25s;z-index:200}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.hide{display:none!important}
+@media(max-width:720px){.topbar{flex-direction:column;align-items:flex-start;gap:8px}}
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div class="gate" id="gate-login">
+  <div class="gate-box">
+    <div class="brand" style="margin-bottom:6px"><div class="brand-name">Avalia<em>Stat</em></div></div>
+    <div class="brand-sub" style="margin-bottom:24px">INFERÊNCIA ESTATÍSTICA · NBR 14653-2</div>
+    <div class="fg" style="margin-bottom:12px"><label>Usuário</label><input id="lg-user" autocomplete="username"/></div>
+    <div class="fg" style="margin-bottom:18px"><label>Senha</label><input id="lg-pass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn btn-blue" style="width:100%;justify-content:center" onclick="doLogin()">Entrar</button>
+    <p id="lg-err" style="color:var(--red);font-size:12px;margin-top:10px;display:none">Usuário ou senha incorretos.</p>
+  </div>
+</div>
+
+<!-- ══════════ SETUP PENDENTE ══════════ -->
+<div class="gate hide" id="gate-setup">
+  <div class="gate-box" style="max-width:520px">
+    <div class="brand-name" style="margin-bottom:4px">Avalia<em>Stat</em></div>
+    <div class="c-sub" style="margin-bottom:18px">Configuração pendente</div>
+    <p style="font-size:13px;margin-bottom:12px">O aplicativo ainda não está conectado a um banco de dados. Para ativar:</p>
+    <ol style="font-size:12.5px;color:var(--ink2);padding-left:20px;line-height:2">
+      <li>Crie um projeto novo no Supabase (supabase.com)</li>
+      <li>Rode o arquivo <span class="mono">criar_banco_avaliastat.sql</span> no SQL Editor</li>
+      <li>Em Settings → API, copie a <strong>URL</strong> e a chave <strong>publishable</strong></li>
+      <li>Edite este index.html no GitHub e cole os dois valores nas linhas marcadas com <span class="mono">COLE_AQUI</span></li>
+    </ol>
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div class="wrap hide" id="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-name">Avalia<em>Stat</em></div>
+      <div class="brand-sub">INFERÊNCIA ESTATÍSTICA · NBR 14653-2</div>
+    </div>
+    <div class="top-user"><span>ATTO Engenharia</span> · <a onclick="location.reload()">Sair</a></div>
+  </div>
+
+  <!-- LISTA DE MODELOS -->
+  <div id="view-list">
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+      <input id="q-modelos" placeholder="Buscar modelo ou OS..." style="flex:1;min-width:220px" oninput="renderModelos()"/>
+      <button class="btn btn-blue" onclick="newModelo()"><i class="ti ti-plus"></i> Novo modelo</button>
+    </div>
+    <div class="card" style="padding:6px 14px">
+      <table class="tbl">
+        <thead><tr><th>Modelo</th><th>Tipo</th><th>OS ref.</th><th>Amostras</th><th>Valor estimado</th><th>R²</th><th style="width:56px"></th></tr></thead>
+        <tbody id="modelos-body"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DETALHE DO MODELO -->
+  <div id="view-detail" class="hide">
+    <button class="btn" style="margin-bottom:14px" onclick="voltarLista()"><i class="ti ti-arrow-left"></i> Modelos</button>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+        <div>
+          <div class="c-head" id="d-nome">—</div>
+          <div class="c-sub" id="d-sub">—</div>
+        </div>
+        <button class="btn" onclick="editModelo()"><i class="ti ti-edit"></i> Editar modelo</button>
+      </div>
+      <div id="d-avaliando" style="margin-top:14px"></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px">
+        <div><div class="c-head" style="margin:0">Amostras</div><div class="c-sub">Imóveis comparativos pesquisados por você</div></div>
+        <button class="btn btn-sm" onclick="newAmostra()"><i class="ti ti-plus"></i> Adicionar amostra</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="tbl" id="tbl-amostras"><thead></thead><tbody id="amostras-body"></tbody></table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <div><div class="c-head" style="margin:0">Cálculo estatístico</div><div class="c-sub">Regressão linear múltipla · mínimos quadrados</div></div>
+        <button class="btn btn-blue" onclick="calcular()"><i class="ti ti-calculator"></i> Calcular regressão</button>
+      </div>
+      <div id="resultado" style="margin-top:16px;font-size:12.5px;color:var(--ink3)">Adicione as amostras e clique em “Calcular regressão”.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL MODELO ══════════ -->
+<div class="overlay hide" id="m-modelo" onclick="if(event.target===this)hideM('m-modelo')">
+  <div class="modal" style="max-width:620px">
+    <div class="m-title" id="m-modelo-title">Novo modelo</div>
+    <input type="hidden" id="mod-id"/>
+    <div class="fgrid">
+      <div class="fg" style="grid-column:1/-1"><label>Nome do modelo</label><input id="mod-nome" placeholder="Ex: Apto Ed. Solar — Ponta Porã"/></div>
+      <div class="fg"><label>Tipo de imóvel</label><select id="mod-tipo"><option>Residencial</option><option>Comercial</option><option>Terreno</option></select></div>
+      <div class="fg"><label>OS de referência (opcional)</label><input id="mod-os" placeholder="Ex: 20260611-0038-1"/></div>
+    </div>
+    <div class="fg" style="margin-top:10px">
+      <label>Variáveis de homogeneização</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="mod-var-input" placeholder="Ex: Área, Idade, Padrão, Vagas..." onkeydown="if(event.key==='Enter'){event.preventDefault();addVar();}"/>
+        <button class="btn" onclick="addVar()"><i class="ti ti-plus"></i></button>
+      </div>
+      <div id="mod-chips" style="display:flex;flex-wrap:wrap;gap:7px"></div>
+    </div>
+    <div id="mod-aval-fields" style="margin-top:14px"></div>
+    <div class="m-foot"><button class="btn" onclick="hideM('m-modelo')">Cancelar</button><button class="btn btn-blue" onclick="saveModelo()">Salvar modelo</button></div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL AMOSTRA ══════════ -->
+<div class="overlay hide" id="m-amostra" onclick="if(event.target===this)hideM('m-amostra')">
+  <div class="modal">
+    <div class="m-title" id="m-amostra-title">Nova amostra</div>
+    <input type="hidden" id="ams-id"/>
+    <div class="fgrid">
+      <div class="fg" style="grid-column:1/-1"><label>Identificação / endereço</label><input id="ams-end" placeholder="Ex: Rua X, 123 — Bairro"/></div>
+      <div class="fg"><label>Valor (R$)</label><input id="ams-val" type="number" placeholder="0"/></div>
+      <div class="fg"><label>Fonte</label><input id="ams-fonte" placeholder="Ex: imobiliária, OLX, escritura"/></div>
+      <div class="fg"><label>Data da coleta</label><input id="ams-data" type="date"/></div>
+    </div>
+    <div id="ams-var-fields" style="margin-top:12px"></div>
+    <div class="m-foot"><button class="btn" onclick="hideM('m-amostra')">Cancelar</button><button class="btn btn-blue" onclick="saveAmostra()">Salvar amostra</button></div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL EXCLUIR ══════════ -->
+<div class="overlay hide" id="m-del">
+  <div class="modal" style="max-width:420px">
+    <div class="m-title" style="color:var(--red)"><i class="ti ti-alert-triangle"></i> Excluir</div>
+    <p id="del-msg" style="font-size:13px">Tem certeza?</p>
+    <div class="m-foot">
+      <button class="btn" onclick="hideM('m-del')">Cancelar</button>
+      <button class="btn btn-danger" id="del-confirm"><i class="ti ti-trash"></i> Excluir definitivamente</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════ CONFIGURACAO — edite estas 2 linhas ══════════ */
+const SB='COLE_AQUI_A_URL_DO_PROJETO';          /* ex: https://abcdefgh.supabase.co */
+const KEY='COLE_AQUI_A_CHAVE_PUBLISHABLE';      /* Settings -> API -> publishable key */
+/* ══════════════════════════════════════════════════════════ */
+
+const USERS={'euler':'avalia2026'};
+
+const H={'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+KEY,'Prefer':'return=representation'};
+async function sGet(t,q=''){try{const r=await fetch(SB+'/rest/v1/'+t+'?order=criado_em.desc'+q,{headers:H});return r.json();}catch{return [];}}
+async function sPost(t,b){const r=await fetch(SB+'/rest/v1/'+t,{method:'POST',headers:H,body:JSON.stringify(b)});return r.json();}
+async function sPatch(t,id,b){await fetch(SB+'/rest/v1/'+t+'?id=eq.'+id,{method:'PATCH',headers:H,body:JSON.stringify(b)});}
+async function sDel(t,id){await fetch(SB+'/rest/v1/'+t+'?id=eq.'+id,{method:'DELETE',headers:H});}
+
+const fmt=v=>'R$\u2009'+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+const TIPO_PILL={Comercial:'p-amber',Residencial:'p-green',Terreno:'p-gray'};
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+function showM(id){document.getElementById(id).classList.remove('hide');}
+function hideM(id){document.getElementById(id).classList.add('hide');}
+function g(id){return document.getElementById(id)?.value||'';}
+
+let modelos=[],cur=null,amostras=[],vars=[];
+
+/* ══ login ══ */
+function doLogin(){
+  const u=g('lg-user').trim().toLowerCase(),p=g('lg-pass');
+  if(USERS[u]===p){
+    document.getElementById('gate-login').classList.add('hide');
+    if(SB.includes('COLE_AQUI')){document.getElementById('gate-setup').classList.remove('hide');return;}
+    document.getElementById('app').classList.remove('hide');
+    loadModelos();
+  }else document.getElementById('lg-err').style.display='block';
+}
+
+/* ══ lista de modelos ══ */
+async function loadModelos(){
+  const[ms,as]=await Promise.all([sGet('modelos_avaliacao'),sGet('amostras')]);
+  modelos=(Array.isArray(ms)?ms:[]).map(m=>({...m,n:(Array.isArray(as)?as:[]).filter(a=>a.modelo_id===m.id).length}));
+  renderModelos();
+}
+function renderModelos(){
+  const q=g('q-modelos').toLowerCase();
+  const list=modelos.filter(m=>!q||((m.nome||'')+(m.os_numero||'')).toLowerCase().includes(q));
+  document.getElementById('modelos-body').innerHTML=list.map(m=>`
+    <tr class="row-click" onclick="abrirModelo(${m.id})">
+      <td style="font-weight:500">${m.nome||'—'}</td>
+      <td><span class="pill ${TIPO_PILL[m.tipo_imovel]||'p-gray'}">${m.tipo_imovel||'—'}</span></td>
+      <td class="mono" style="font-size:11px;color:var(--ink3)">${m.os_numero||'—'}</td>
+      <td>${m.n}</td>
+      <td class="mono">${m.valor_estimado!=null?fmt(m.valor_estimado):'—'}</td>
+      <td class="mono">${m.r2!=null?(m.r2*100).toFixed(1)+'%':'—'}</td>
+      <td onclick="event.stopPropagation()"><button class="btn btn-sm btn-danger" onclick="confirmDelModelo(${m.id},this.dataset.n)" data-n="${(m.nome||'modelo').replace(/"/g,'&quot;')}"><i class="ti ti-trash"></i></button></td>
+    </tr>`).join('')||'<tr><td colspan="7" class="loading">Nenhum modelo ainda. Crie o primeiro para começar.</td></tr>';
+}
+
+/* ══ modelo: criar/editar ══ */
+function addVar(){
+  const i=document.getElementById('mod-var-input');const v=i.value.trim();
+  if(!v)return;if(!vars.includes(v))vars.push(v);
+  i.value='';renderChips();renderAvalFields();
+}
+function delVar(v){vars=vars.filter(x=>x!==v);renderChips();renderAvalFields();}
+function renderChips(){
+  document.getElementById('mod-chips').innerHTML=vars.map(v=>`<span class="chip">${v}<i class="ti ti-x" onclick="delVar('${v.replace(/'/g,"\\'")}')"></i></span>`).join('')||'<span style="font-size:11.5px;color:var(--ink3)">Nenhuma variável ainda — digite e aperte Enter</span>';
+}
+function renderAvalFields(){
+  const box=document.getElementById('mod-aval-fields');
+  if(!vars.length){box.innerHTML='';return;}
+  box.innerHTML='<label>Imóvel avaliando</label><div class="fgrid">'+vars.map(v=>`<div class="fg"><label style="text-transform:none;letter-spacing:0">${v}</label><input class="aval-inp" data-v="${v}" type="number" placeholder="0"/></div>`).join('')+'</div>';
+}
+function newModelo(){
+  document.getElementById('mod-id').value='';
+  document.getElementById('m-modelo-title').textContent='Novo modelo';
+  document.getElementById('mod-nome').value='';document.getElementById('mod-tipo').value='Residencial';document.getElementById('mod-os').value='';
+  vars=[];renderChips();renderAvalFields();showM('m-modelo');
+}
+function editModelo(){
+  if(!cur)return;
+  document.getElementById('mod-id').value=cur.id;
+  document.getElementById('m-modelo-title').textContent='Editar modelo';
+  document.getElementById('mod-nome').value=cur.nome||'';document.getElementById('mod-tipo').value=cur.tipo_imovel||'Residencial';document.getElementById('mod-os').value=cur.os_numero||'';
+  vars=[...(cur.variaveis||[])];renderChips();renderAvalFields();
+  setTimeout(()=>{document.querySelectorAll('.aval-inp').forEach(i=>{const v=i.dataset.v;i.value=(cur.avaliando&&cur.avaliando[v]!=null)?cur.avaliando[v]:'';});},0);
+  showM('m-modelo');
+}
+async function saveModelo(){
+  const nome=g('mod-nome');if(!nome){alert('Informe o nome do modelo');return;}
+  if(!vars.length){alert('Adicione pelo menos uma variável de homogeneização');return;}
+  const avaliando={};document.querySelectorAll('.aval-inp').forEach(i=>{avaliando[i.dataset.v]=Number(i.value||0);});
+  const id=g('mod-id');
+  const body={nome,tipo_imovel:g('mod-tipo'),os_numero:g('mod-os')||null,variaveis:vars,avaliando};
+  if(id)await sPatch('modelos_avaliacao',id,body);else await sPost('modelos_avaliacao',body);
+  toast(id?'Modelo atualizado':'Modelo criado');hideM('m-modelo');
+  await loadModelos();
+  if(id)abrirModelo(Number(id));
+}
+function confirmDelModelo(id,nome){
+  document.getElementById('del-msg').textContent='Excluir o modelo "'+nome+'" e todas as suas amostras? Esta ação não pode ser desfeita.';
+  document.getElementById('del-confirm').onclick=async()=>{
+    await fetch(SB+'/rest/v1/amostras?modelo_id=eq.'+id,{method:'DELETE',headers:H});
+    await sDel('modelos_avaliacao',id);
+    hideM('m-del');toast('Modelo excluído');loadModelos();
+  };
+  showM('m-del');
+}
+
+/* ══ detalhe ══ */
+async function abrirModelo(id){
+  cur=modelos.find(m=>m.id===id);
+  if(!cur){const r=await sGet('modelos_avaliacao','&id=eq.'+id);cur=r[0];if(!cur)return;}
+  vars=cur.variaveis||[];
+  document.getElementById('view-list').classList.add('hide');
+  document.getElementById('view-detail').classList.remove('hide');
+  document.getElementById('d-nome').textContent=cur.nome||'—';
+  document.getElementById('d-sub').textContent=(cur.tipo_imovel||'')+(cur.os_numero?' · OS '+cur.os_numero:'');
+  const av=cur.avaliando||{};
+  document.getElementById('d-avaliando').innerHTML='<label>Imóvel avaliando</label><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">'+vars.map(v=>`<div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px">${v}</div><div class="mono" style="font-size:14px">${av[v]!=null?av[v]:'—'}</div></div>`).join('')+'</div>';
+  amostras=await sGet('amostras','&modelo_id=eq.'+cur.id);
+  if(!Array.isArray(amostras))amostras=[];
+  renderAmostras();
+  if(cur.valor_estimado!=null)renderReadout({valorEstimado:cur.valor_estimado,intervaloMin:cur.intervalo_min,intervaloMax:cur.intervalo_max,R2:cur.r2,R2adj:cur.r2_ajustado,equacaoTexto:cur.equacao,cached:true});
+  else document.getElementById('resultado').innerHTML='Adicione as amostras e clique em “Calcular regressão”.';
+}
+function voltarLista(){document.getElementById('view-detail').classList.add('hide');document.getElementById('view-list').classList.remove('hide');loadModelos();}
+function renderAmostras(){
+  const thead=document.querySelector('#tbl-amostras thead');
+  thead.innerHTML='<tr><th>Identificação</th><th>Valor</th>'+vars.map(v=>`<th>${v}</th>`).join('')+'<th>Fonte</th><th style="width:80px"></th></tr>';
+  document.getElementById('amostras-body').innerHTML=amostras.map(a=>{const d=a.dados||{};return `<tr>
+    <td style="font-size:12px">${a.endereco||'—'}</td>
+    <td class="mono">${fmt(a.valor)}</td>
+    ${vars.map(v=>`<td class="mono">${d[v]!=null?d[v]:'—'}</td>`).join('')}
+    <td style="font-size:11px;color:var(--ink3)">${a.fonte||'—'}</td>
+    <td><button class="btn btn-sm" onclick="editAmostra(${a.id})"><i class="ti ti-edit"></i></button> <button class="btn btn-sm btn-danger" onclick="confirmDelAmostra(${a.id})"><i class="ti ti-trash"></i></button></td>
+  </tr>`;}).join('')||`<tr><td colspan="${vars.length+4}" class="loading">Nenhuma amostra ainda — adicione a primeira</td></tr>`;
+}
+
+/* ══ amostra: criar/editar ══ */
+function renderAmsFields(vals){
+  vals=vals||{};
+  document.getElementById('ams-var-fields').innerHTML='<label>Dados da amostra</label><div class="fgrid">'+vars.map(v=>`<div class="fg"><label style="text-transform:none;letter-spacing:0">${v}</label><input class="ams-inp" data-v="${v}" type="number" value="${vals[v]!=null?vals[v]:''}" placeholder="0"/></div>`).join('')+'</div>';
+}
+function newAmostra(){
+  document.getElementById('ams-id').value='';
+  document.getElementById('m-amostra-title').textContent='Nova amostra';
+  document.getElementById('ams-end').value='';document.getElementById('ams-val').value='';document.getElementById('ams-fonte').value='';document.getElementById('ams-data').value='';
+  renderAmsFields();showM('m-amostra');
+}
+function editAmostra(id){
+  const a=amostras.find(x=>x.id===id);if(!a)return;
+  document.getElementById('ams-id').value=a.id;
+  document.getElementById('m-amostra-title').textContent='Editar amostra';
+  document.getElementById('ams-end').value=a.endereco||'';document.getElementById('ams-val').value=a.valor||'';
+  document.getElementById('ams-fonte').value=a.fonte||'';document.getElementById('ams-data').value=a.data_coleta||'';
+  renderAmsFields(a.dados||{});showM('m-amostra');
+}
+async function saveAmostra(){
+  const end=g('ams-end');const val=Number(g('ams-val')||0);
+  if(!end||!val){alert('Informe a identificação e o valor');return;}
+  const dados={};document.querySelectorAll('.ams-inp').forEach(i=>{dados[i.dataset.v]=Number(i.value||0);});
+  const id=g('ams-id');
+  const body={modelo_id:cur.id,endereco:end,valor:val,fonte:g('ams-fonte'),data_coleta:g('ams-data')||null,dados};
+  if(id)await sPatch('amostras',id,body);else await sPost('amostras',body);
+  toast('Amostra salva');hideM('m-amostra');
+  amostras=await sGet('amostras','&modelo_id=eq.'+cur.id);
+  if(!Array.isArray(amostras))amostras=[];
+  renderAmostras();
+}
+function confirmDelAmostra(id){
+  document.getElementById('del-msg').textContent='Excluir esta amostra?';
+  document.getElementById('del-confirm').onclick=async()=>{
+    await sDel('amostras',id);hideM('m-del');
+    amostras=amostras.filter(a=>a.id!==id);renderAmostras();toast('Amostra excluída');
+  };
+  showM('m-del');
+}
+
+/* ══ motor de regressao (minimos quadrados) ══ */
+function transpose(M){return M[0].map((_,j)=>M.map(r=>r[j]));}
+function matMul(A,B){const m=A.length,n=A[0].length,p=B[0].length;const R=Array.from({length:m},()=>Array(p).fill(0));for(let i=0;i<m;i++)for(let j=0;j<p;j++){let s=0;for(let k=0;k<n;k++)s+=A[i][k]*B[k][j];R[i][j]=s;}return R;}
+function invert(M){
+  const n=M.length;const A=M.map((row,i)=>row.concat(Array.from({length:n},(_,j)=>i===j?1:0)));
+  for(let i=0;i<n;i++){
+    let piv=A[i][i];
+    if(Math.abs(piv)<1e-9){let sw=-1;for(let k=i+1;k<n;k++){if(Math.abs(A[k][i])>1e-9){sw=k;break;}}if(sw===-1)return null;[A[i],A[sw]]=[A[sw],A[i]];piv=A[i][i];}
+    for(let j=0;j<2*n;j++)A[i][j]/=piv;
+    for(let k=0;k<n;k++){if(k===i)continue;const f=A[k][i];for(let j=0;j<2*n;j++)A[k][j]-=f*A[i][j];}
+  }
+  return A.map(row=>row.slice(n));
+}
+function tCrit80(df){
+  const t={1:3.078,2:1.886,3:1.638,4:1.533,5:1.476,6:1.440,7:1.415,8:1.397,9:1.383,10:1.372,12:1.356,15:1.341,20:1.325,25:1.316,30:1.310,40:1.303,60:1.296,120:1.289};
+  if(df<=0)return 1.282;
+  const ks=Object.keys(t).map(Number).sort((a,b)=>a-b);
+  for(const k of ks)if(df<=k)return t[k];
+  return 1.282;
+}
+function runRegression(am,vs,aval){
+  const n=am.length,k=vs.length;
+  if(n<k+2)return{error:'Amostras insuficientes: com '+k+' variável(is) você precisa de pelo menos '+(k+2)+' amostras (tem '+n+').'};
+  const X=am.map(a=>[1,...vs.map(v=>Number((a.dados||{})[v]||0))]);
+  const y=am.map(a=>Number(a.valor||0));
+  const Xt=transpose(X);const XtX=matMul(Xt,X);const XtXinv=invert(XtX);
+  if(!XtXinv)return{error:'Variáveis muito correlacionadas entre si (multicolinearidade). Remova uma variável ou diversifique as amostras.'};
+  const XtY=Xt.map(row=>row.reduce((s,x,i)=>s+x*y[i],0));
+  const beta=XtXinv.map(row=>row.reduce((s,x,i)=>s+x*XtY[i],0));
+  const yHat=X.map(row=>row.reduce((s,x,i)=>s+x*beta[i],0));
+  const resid=y.map((yi,i)=>yi-yHat[i]);
+  const yMean=y.reduce((a,b)=>a+b,0)/n;
+  const SQE=resid.reduce((s,e)=>s+e*e,0);
+  const SQT=y.reduce((s,yi)=>s+(yi-yMean)**2,0);
+  const R2=SQT>0?1-SQE/SQT:0;
+  const df=n-k-1;
+  const R2adj=df>0?1-(1-R2)*(n-1)/df:R2;
+  const sigma2=df>0?SQE/df:0;
+  const seCoef=XtXinv.map((row,i)=>Math.sqrt(Math.max(0,row[i]*sigma2)));
+  const tStats=beta.map((b,i)=>seCoef[i]>0?b/seCoef[i]:0);
+  const tc=tCrit80(df);
+  const x0=[1,...vs.map(v=>Number((aval||{})[v]||0))];
+  const est=x0.reduce((s,xi,i)=>s+xi*beta[i],0);
+  const Ax0=XtXinv.map(row=>row.reduce((s,x,i)=>s+x*x0[i],0));
+  const q=x0.reduce((s,xi,i)=>s+xi*Ax0[i],0);
+  const SE=Math.sqrt(Math.max(0,sigma2*(1+q)));
+  const mg=tc*SE;
+  const eq='Valor = '+beta[0].toFixed(2)+vs.map((v,i)=>(beta[i+1]>=0?' + ':' − ')+Math.abs(beta[i+1]).toFixed(4)+'·'+v).join('');
+  return{beta,vs,seCoef,tStats,tc,R2,R2adj,n,k,df,valorEstimado:est,intervaloMin:est-mg,intervaloMax:est+mg,equacaoTexto:eq};
+}
+async function calcular(){
+  const res=runRegression(amostras,vars,cur.avaliando||{});
+  if(res.error){document.getElementById('resultado').innerHTML='<span style="color:var(--red)">'+res.error+'</span>';return;}
+  await sPatch('modelos_avaliacao',cur.id,{valor_estimado:res.valorEstimado,r2:res.R2,r2_ajustado:res.R2adj,intervalo_min:res.intervaloMin,intervalo_max:res.intervaloMax,equacao:res.equacaoTexto});
+  cur.valor_estimado=res.valorEstimado;cur.r2=res.R2;
+  renderReadout(res);toast('Regressão calculada');
+}
+function renderReadout(r){
+  const min=r.intervaloMin,max=r.intervaloMax,est=r.valorEstimado;
+  const span=max-min||1;
+  const pos=((est-min)/span*100).toFixed(1);
+  let html=`
+  <div class="readout">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;align-items:flex-end">
+      <div><div class="readout-lbl">Valor estimado</div><div class="readout-val">${fmt(est)}</div></div>
+      <div style="text-align:right"><div class="readout-lbl">R² &nbsp;·&nbsp; R² ajustado</div><div class="mono" style="font-size:16px">${r.R2!=null?(r.R2*100).toFixed(1):'—'}% · ${r.R2adj!=null?(r.R2adj*100).toFixed(1):'—'}%</div></div>
+    </div>
+    <div class="range-bar"><div class="range-fill" style="left:0;right:0"></div><div class="range-dot" style="left:${pos}%"></div></div>
+    <div class="range-ends"><span>${fmt(min)}</span><span class="readout-lbl" style="align-self:center">intervalo de confiança 80%</span><span>${fmt(max)}</span></div>
+    ${r.equacaoTexto?`<div class="mono" style="font-size:11.5px;color:var(--ink2);background:var(--paper);border:1px solid var(--grid);padding:9px 11px;border-radius:7px;margin-top:14px;word-break:break-all">${r.equacaoTexto}</div>`:''}
+  </div>`;
+  if(!r.cached){
+    const sig=t=>Math.abs(t)>=r.tc?'<span class="pill p-green">significativa</span>':'<span class="pill p-red">não significativa</span>';
+    html+=`
+    <div style="margin-top:16px;overflow-x:auto">
+    <table class="tbl"><thead><tr><th>Variável</th><th>Coeficiente</th><th>Erro padrão</th><th>t</th><th>Significância (80%)</th></tr></thead><tbody>
+      <tr><td>Intercepto</td><td class="mono">${r.beta[0].toFixed(4)}</td><td class="mono">${r.seCoef[0].toFixed(4)}</td><td class="mono">${r.tStats[0].toFixed(2)}</td><td>${sig(r.tStats[0])}</td></tr>
+      ${r.vs.map((v,i)=>`<tr><td>${v}</td><td class="mono">${r.beta[i+1].toFixed(4)}</td><td class="mono">${r.seCoef[i+1].toFixed(4)}</td><td class="mono">${r.tStats[i+1].toFixed(2)}</td><td>${sig(r.tStats[i+1])}</td></tr>`).join('')}
+    </tbody></table>
+    <div style="display:flex;gap:18px;margin-top:10px;font-size:11.5px;color:var(--ink3)" class="mono">
+      <span>n = ${r.n}</span><span>variáveis = ${r.k}</span><span>graus de liberdade = ${r.df}</span>
+    </div>
+    </div>`;
+  }else{
+    html+='<p style="font-size:11px;color:var(--ink3);margin-top:10px">Resultado do último cálculo salvo. Clique em “Calcular regressão” para atualizar e ver a tabela de significância completa.</p>';
+  }
+  html+='<p style="font-size:10.5px;color:var(--ink3);margin-top:12px">Regressão linear múltipla por mínimos quadrados · intervalo de confiança bilateral de 80%. A verificação dos pressupostos do modelo e a classificação do grau de fundamentação (Anexo A, NBR 14653-2) são responsabilidade do profissional avaliador.</p>';
+  document.getElementById('resultado').innerHTML=html;
+}
+</script>
+</body>
+</html>
